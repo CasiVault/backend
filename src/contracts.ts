@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import * as dotenv from "dotenv";
-import { Account, RpcProvider, json, Contract, ec, constants, num, hash } from 'starknet';
+import { Account, RpcProvider, json, Contract, ec, constants, num, hash, LegacyContractClass, Abi } from 'starknet';
 const fs = require('fs');
 dotenv.config();
 
@@ -21,17 +21,18 @@ export const account = new Account(provider_strk, accountAddress, privateKey, un
 
 const erc20_address = '0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d';
 
-async function fn1(): Promise<any> {
-  return await provider_strk.getClassAt(erc20_address);
+export async function getERC20Contract(): Promise<any> {
+  const testAbi = await provider_strk.getClassAt(erc20_address);
+  if (testAbi === undefined ||  !('abi' in testAbi)) {
+    throw new Error('no abi.');
+  }
+
+  const erc20 = new Contract(testAbi.abi, erc20_address, provider_strk);
+  erc20.connect(account);
+  return erc20;
 }
 
-const testAbi = fn1();
-if (testAbi === undefined) {
-  throw new Error('no abi.');
-}
 
-const erc20 = new Contract(testAbi, erc20_address, provider);
-erc20.connect(account);
 
 import compoundV3ModuleABI from "./abi/CompoundV3Module.json";
 import aaveV3ModuleABI from "./abi/AAVEModule.json";
