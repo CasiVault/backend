@@ -88,56 +88,57 @@ export async function approveVault(amount: Number) {
     // }
 }
 
-//1
-// const myCall2 = vault.populate('deposit', [
-  //   100
-  // ]);
+export async function deposit() {
+    const vault = await getVaultContract();
+    const myCall2 = vault.populate("deposit", [100]);
 
-  // const tx2 = await account.execute(myCall2, {
-  //   version: constants.TRANSACTION_VERSION.V3,
-  //   maxFee: 1e15,
-  //   tip: 1e13,
-  //   paymasterData: [],
-  //   resourceBounds: {
-  //     l1_gas: {
-  //       max_amount: num.toHex(maxQtyGasAuthorized),
-  //       max_price_per_unit: num.toHex(maxPriceAuthorizeForOneGas),
-  //     },
-  //     l2_gas: {
-  //       max_amount: num.toHex(0),
-  //       max_price_per_unit: num.toHex(0),
-  //     },
-  //   },
-  // });
-  // console.log("Transfer tx hash:", tx2.transaction_hash);
+    const tx2 = await account.execute(myCall2, {
+        version: constants.TRANSACTION_VERSION.V3,
+        maxFee: 1e15,
+        tip: 1e13,
+        paymasterData: [],
+        resourceBounds: {
+            l1_gas: {
+                max_amount: num.toHex(maxQtyGasAuthorized),
+                max_price_per_unit: num.toHex(maxPriceAuthorizeForOneGas),
+            },
+            l2_gas: {
+                max_amount: num.toHex(0),
+                max_price_per_unit: num.toHex(0),
+            },
+        },
+    });
+    console.log("Transfer tx hash:", tx2.transaction_hash);
+}
+
+export async function transferToTreasury() {
+    const vault = await getVaultContract();
+    const myCall3 = vault.populate("transferToTreasury", [
+        10,
+        "0xb1CF4E0a37138660D0760944229E474c8A7DBC21",
+        "0x0594c1582459ea03f77deaf9eb7e3917d6994a03c13405ba42867f83d85f085d",
+        "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+    ]);
 
 
-  //4
-  // const myCall3 = vault.populate('transferToTreasury', [
-  //   10,
-  //   "0xb1CF4E0a37138660D0760944229E474c8A7DBC21",
-  //   "0x0594c1582459ea03f77deaf9eb7e3917d6994a03c13405ba42867f83d85f085d",
-  //   "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
-  // ]);
-
-  // const tx3 = await account.execute(myCall3, {
-  //   version: constants.TRANSACTION_VERSION.V3,
-  //   maxFee: 1e15,
-  //   tip: 1e13,
-  //   paymasterData: [],
-  //   resourceBounds: {
-  //     l1_gas: {
-  //       max_amount: num.toHex(maxQtyGasAuthorized),
-  //       max_price_per_unit: num.toHex(maxPriceAuthorizeForOneGas),
-  //     },
-  //     l2_gas: {
-  //       max_amount: num.toHex(0),
-  //       max_price_per_unit: num.toHex(0),
-  //     },
-  //   },
-  // });
-  // console.log("Transfer tx hash:", tx3.transaction_hash);
-
+    const tx3 = await account.execute(myCall3, {
+        version: constants.TRANSACTION_VERSION.V3,
+        maxFee: 1e15,
+        tip: 1e13,
+        paymasterData: [],
+        resourceBounds: {
+            l1_gas: {
+                max_amount: num.toHex(maxQtyGasAuthorized),
+                max_price_per_unit: num.toHex(maxPriceAuthorizeForOneGas),
+            },
+            l2_gas: {
+                max_amount: num.toHex(0),
+                max_price_per_unit: num.toHex(0),
+            },
+        },
+    });
+    console.log("Transfer tx hash:", tx3.transaction_hash);
+}
 
 
 //De sau khong can goi
