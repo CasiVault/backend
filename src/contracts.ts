@@ -1,9 +1,37 @@
 import { ethers } from "ethers";
 import * as dotenv from "dotenv";
+import { Account, RpcProvider, json, Contract, ec, constants, num, hash } from 'starknet';
+const fs = require('fs');
 dotenv.config();
 
 export const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 export const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+
+
+const maxQtyGasAuthorized = 180000n;
+const maxPriceAuthorizeForOneGas = 10n ** 15n;
+const provider_strk = new RpcProvider({
+  nodeUrl: process.env.STRK_RPC_URL,
+});
+
+const accountAddress = process.env.ACCOUNT_ADDRESS || "";
+const privateKey = process.env.PRIVATE_KEY_STRK || "";
+
+export const account = new Account(provider_strk, accountAddress, privateKey, undefined, constants.TRANSACTION_VERSION.V3);
+
+const erc20_address = '0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d';
+
+async function fn1(): Promise<any> {
+  return await provider_strk.getClassAt(erc20_address);
+}
+
+const testAbi = fn1();
+if (testAbi === undefined) {
+  throw new Error('no abi.');
+}
+
+const erc20 = new Contract(testAbi, erc20_address, provider);
+erc20.connect(account);
 
 import compoundV3ModuleABI from "./abi/CompoundV3Module.json";
 import aaveV3ModuleABI from "./abi/AAVEModule.json";

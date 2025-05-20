@@ -85,8 +85,8 @@ export class TulipAgent {
         if (!this.currentProtocol) {
             throw new Error("No protocol has been deposited to before.");
         }
-        // const withdrawAmount = await this.calWithdraw();
-        const withdrawAmount = 1; //mock withdraw amount for testing
+        const withdrawAmount = await this.calWithdraw();
+        //const withdrawAmount = 1; //mock withdraw amount for testing
 
         await this.currentProtocol.withdraw();
 
