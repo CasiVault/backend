@@ -47,10 +47,10 @@ export async function getVaultContract(): Promise<Contract> {
     return vault;
 }
 
-export async function approveVault() {
+export async function approveVault(amount: Number) {
     const erc20 = await getERC20Contract();
     const vault = await getVaultContract();
-    const myCall1 = erc20.populate("approve", ["0x06224ff8cd622bb4e960b2dd59f868e4c85bc6d27b6a2ba5cf22366022cb32c4", 100]);
+    const myCall1 = erc20.populate("approve", ["0x06224ff8cd622bb4e960b2dd59f868e4c85bc6d27b6a2ba5cf22366022cb32c4", amount]);
     const { transaction_hash: txH } = await account.execute(myCall1, {
         version: constants.TRANSACTION_VERSION.V3,
         maxFee: 1e15,
@@ -68,25 +68,77 @@ export async function approveVault() {
         },
     });
     console.log("tx: ", txH);
-    const txR = await provider_strk.waitForTransaction(txH);
-    if (txR.isSuccess()) {
-        console.log("Paid fee =", txR.actual_fee);
-        console.log("events: ", txR.events);
-    }
-    const txReceipt = await provider_strk.getTransactionReceipt("0x5fddbd9214389991c02426ecfc7bb3e223918fef4bc182449f2a79f2c28eff8");
-    if (!txReceipt.isSuccess()) return;
-    console.log("Finality status:", txReceipt.finality_status);
-    console.log("events: ", txReceipt.events);
+    // const txR = await provider_strk.waitForTransaction(txH);
+    // if (txR.isSuccess()) {
+    //     console.log("Paid fee =", txR.actual_fee);
+    //     console.log("events: ", txR.events);
+    // }
+    // const txReceipt = await provider_strk.getTransactionReceipt("0x5fddbd9214389991c02426ecfc7bb3e223918fef4bc182449f2a79f2c28eff8");
+    // if (!txReceipt.isSuccess()) return;
+    // console.log("Finality status:", txReceipt.finality_status);
+    // console.log("events: ", txReceipt.events);
 
-    if (txReceipt.execution_status === "SUCCEEDED") {
-        for (const event of txReceipt.events) {
-            console.log("--- Event ---");
-            console.log("From Address:", event.from_address);
-            console.log("Keys:", event.keys);
-            console.log("Data:", event.data);
-        }
-    }
+    // if (txReceipt.execution_status === "SUCCEEDED") {
+    //     for (const event of txReceipt.events) {
+    //         console.log("--- Event ---");
+    //         console.log("From Address:", event.from_address);
+    //         console.log("Keys:", event.keys);
+    //         console.log("Data:", event.data);
+    //     }
+    // }
 }
+
+//1
+// const myCall2 = vault.populate('deposit', [
+  //   100
+  // ]);
+
+  // const tx2 = await account.execute(myCall2, {
+  //   version: constants.TRANSACTION_VERSION.V3,
+  //   maxFee: 1e15,
+  //   tip: 1e13,
+  //   paymasterData: [],
+  //   resourceBounds: {
+  //     l1_gas: {
+  //       max_amount: num.toHex(maxQtyGasAuthorized),
+  //       max_price_per_unit: num.toHex(maxPriceAuthorizeForOneGas),
+  //     },
+  //     l2_gas: {
+  //       max_amount: num.toHex(0),
+  //       max_price_per_unit: num.toHex(0),
+  //     },
+  //   },
+  // });
+  // console.log("Transfer tx hash:", tx2.transaction_hash);
+
+
+  //4
+  // const myCall3 = vault.populate('transferToTreasury', [
+  //   10,
+  //   "0xb1CF4E0a37138660D0760944229E474c8A7DBC21",
+  //   "0x0594c1582459ea03f77deaf9eb7e3917d6994a03c13405ba42867f83d85f085d",
+  //   "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
+  // ]);
+
+  // const tx3 = await account.execute(myCall3, {
+  //   version: constants.TRANSACTION_VERSION.V3,
+  //   maxFee: 1e15,
+  //   tip: 1e13,
+  //   paymasterData: [],
+  //   resourceBounds: {
+  //     l1_gas: {
+  //       max_amount: num.toHex(maxQtyGasAuthorized),
+  //       max_price_per_unit: num.toHex(maxPriceAuthorizeForOneGas),
+  //     },
+  //     l2_gas: {
+  //       max_amount: num.toHex(0),
+  //       max_price_per_unit: num.toHex(0),
+  //     },
+  //   },
+  // });
+  // console.log("Transfer tx hash:", tx3.transaction_hash);
+
+
 
 //De sau khong can goi
 // import compoundV3ModuleABI from "./abi/CompoundV3Module.json";
