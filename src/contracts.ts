@@ -31,13 +31,13 @@ async function getERC20Contract(): Promise<Contract> {
     return erc20;
 }
 
-async function checkBalance(): Promise<any> {
+export async function checkBalance(): Promise<any> {
     const tokenStrk = await getERC20Contract();
     const tx = await tokenStrk.balance_of("0x00d5944409b0e99d8671207c1a1f8db223a258f2effa29efdf2cbddf0a85d1b1");
     console.log(tx);
 }
 
-const balance = checkBalance();
+// const balance = checkBalance();
 
 export async function getVaultContract(): Promise<Contract> {
     const vault_address = "0x06224ff8cd622bb4e960b2dd59f868e4c85bc6d27b6a2ba5cf22366022cb32c4";
