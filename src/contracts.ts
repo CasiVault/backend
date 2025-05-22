@@ -38,7 +38,7 @@ export async function checkBalance(): Promise<any> {
     return tx;
 }
 
- const balance = checkBalance();
+const balance = checkBalance();
 
 export async function getVaultContract(): Promise<Contract> {
     const vault_address = "0x06224ff8cd622bb4e960b2dd59f868e4c85bc6d27b6a2ba5cf22366022cb32c4";
