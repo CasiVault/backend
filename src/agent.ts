@@ -7,121 +7,65 @@ import { treasuryContract } from "./contracts";
 dotenv.config();
 
 export class TulipAgent {
-    private currentProtocol?: IProtocolService;
-
-    async getTulipCurrentBalance(): Promise<number> {
-        // todo: 
-        return 100;
+    //TODO: thay bằng hàm tính tổng lượng tiền user request
+    async getWithdrawAmountForUserRequest(): Promise<number> {
+        return 1;
     }
 
-    async getTulipTotalBalance(): Promise<number> {
-        // todo:
-        return 3000;
+    //TODO: xử lý luồng rút tiền cho từng user trong hàng đợi
+    // gọi đến hàm withdrawForRequest trên contract vault, chuyển tiền cho từng user
+    async withdrawProcessForUserRequest(amount: number): Promise<void> {
+        return;
     }
 
-    async getBalanceInfo() {
-        const current = await this.getTulipCurrentBalance();
-        const total = await this.getTulipTotalBalance();
-        console.log(`Current Balance: ${current}, Total Balance: ${total}`);
+    //TODO: check xem balance của vault có > 0 thì chuyển tiền từ vault về treasury
+    async transferFromVaultToTreasury(): Promise<void> {
+        return;
     }
 
-    public async calDeposit(): Promise<number> {
-        const currentBalance = await this.getTulipCurrentBalance();
-        const totalBalance = await this.getTulipTotalBalance();
-        let depositAmount = 0;
-        if (currentBalance > 0.3 * totalBalance) {
-            depositAmount = currentBalance - 0.2 * totalBalance;
-        }
-        return Math.round(depositAmount * 1e6) / 1e6;
-    }
-
-    public async calWithdraw(): Promise<number> {
-        const currentBalance = await this.getTulipCurrentBalance();
-        const totalBalance = await this.getTulipTotalBalance();
-        let withdrawAmount = 0;
-        if (currentBalance < 0.1 * totalBalance) {
-            withdrawAmount = 0.2 * totalBalance - currentBalance;
-        }
-        return Math.round(withdrawAmount * 1e6) / 1e6;
-    }
-
-    public async transferToTreasury(amount: number): Promise<void> {
-        console.log("Transferring from Tulip to Treasury...");
-        //todo: hàm chuyển từ tulip sang treasury
-    }
-
-    public async transferFromTreasuryToTulip(amount: number): Promise<void> {
-        console.log(`Transferring ${amount} from Treasury to Tulip...`);
-        const transferTx = await treasuryContract.transferToTulip(amount, {
-            value: ethers.parseEther("0.001")
-        });
-        await transferTx.wait();
-        console.log("✅ Đã chuyển từ Treasury về Tulip");
-    }
-
-    public async transferFromTulipToBestProtocolFlow(protocols: IProtocolService[]): Promise<string> {
-        const tulipCurrentBalance = await this.getTulipCurrentBalance();
-        if (tulipCurrentBalance === 0) throw new Error("Tulip balance is 0");
-    
-        const bestProtocol = await getBestProtocol(protocols);
-        this.currentProtocol = bestProtocol;
-
-        const depositAmount = await this.calDeposit();
-        if (depositAmount <= 0) {
-            console.log("No need to deposit, deposit amount is 0");
-            return "Skipped";
-        }
-    
-        await this.transferToTreasury(depositAmount);
-
-        await bestProtocol.deposit();
-        return "Deposit complete";
-    }
-    
-
-    public async withdrawFromBestProtocolToTulipFlow(protocols: IProtocolService[]): Promise<string> {
-        //mock current protocol for testing
-        this.currentProtocol = protocols[0];
-        if (!this.currentProtocol) {
-            throw new Error("No protocol has been deposited to before.");
-        }
-        // const withdrawAmount = await this.calWithdraw();
-        const withdrawAmount = 1; //mock withdraw amount for testing
-
-        await this.currentProtocol.withdraw();
-
-        const treasuryBalance = await this.currentProtocol.getTreasuryBalance();
-        if (withdrawAmount > treasuryBalance) throw new Error("Withdraw amount > treasury balance");
-
-        await this.transferFromTreasuryToTulip(withdrawAmount);
-        const bestProtocol = await getBestProtocol(protocols);
-        await bestProtocol.deposit();
-        return "Withdraw complete";
-    }
-
-    public async checkAndExecuteAction(protocols: IProtocolService[]): Promise<void> {
+    public async processing(protocols: IProtocolService[]): Promise<void> {
         try {
-            console.log("==> Start check...");
-            await this.getBalanceInfo();
-            const currentBalance = await this.getTulipCurrentBalance();
-            const totalBalance = await this.getTulipTotalBalance();
+            console.log("🔍 Finding best protocol...");
+            const bestProtocol = await getBestProtocol(protocols);
+            console.log(`Best protocol selected: ${bestProtocol.name}`);
 
-            if (currentBalance > 0.3 * totalBalance) {
-                console.log("Action: Deposit to best protocol");
-                await this.transferFromTulipToBestProtocolFlow(protocols);
-            } else if (currentBalance < 0.1 * totalBalance) {
-                console.log("Action: Withdraw from best protocol");
-                await this.withdrawFromBestProtocolToTulipFlow(protocols);
+            console.log("Transferring all funds to best protocol...");
+            await bestProtocol.transferAllToProtocol(protocols);
+            console.log("Transfer complete.");
+
+            const withdrawAmount = await this.getWithdrawAmountForUserRequest();
+            console.log(`Calculated withdraw amount: ${withdrawAmount}`);
+
+            if (withdrawAmount > 0) {
+                console.log("Withdrawing from best protocol to treasury...");
+                await bestProtocol.withdraw();
+                console.log("Withdrawal to treasury complete.");
+
+                console.log("Bridging from treasury to vault...");
+                let tx = await treasuryContract.transferToTulip(withdrawAmount, {
+                    value: ethers.parseEther("0.001"),
+                });
+                await tx.wait();
+                console.log("Bridging complete.");
+
+                console.log("Processing user withdrawal requests in vault...");
+                await this.withdrawProcessForUserRequest(withdrawAmount);
+                console.log("Vault user withdrawals processed.");
             } else {
-                console.log("No action needed.");
+                console.log("No withdrawal requests found.");
             }
 
-            await new Promise(res => setTimeout(res, 20000));
-            await this.getBalanceInfo();
-            console.log("==> End check.\n");
+            console.log("Transferring all funds from vault back to treasury...");
+            await this.transferFromVaultToTreasury();
+            console.log("Transfer back to treasury complete.");
+
+            console.log("Depositing funds from treasury into best protocol...");
+            await bestProtocol.deposit();
+            console.log("Deposit to protocol complete.");
+
+            console.log("All steps in processing completed successfully.\n");
         } catch (error) {
-            console.error("Error during check:", error);
-            throw error;
+            console.error("Error during processing:", error);
         }
     }
 }

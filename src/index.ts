@@ -1,4 +1,3 @@
-// index.ts
 import cron from "node-cron";
 import { TulipAgent } from "./agent";
 import { CompoundV3Service } from "./services/CompoundV3Service";
@@ -15,9 +14,9 @@ const protocols = [
 
 cron.schedule("* * * * *", async () => {
   try {
-    console.log("⏰ Running TulipAgent check...");
-    await agent.checkAndExecuteAction(protocols);
-    console.log("✅ Check completed.\n");
+    console.log("⏰ Running TulipAgent processing...");
+    await agent.processing(protocols);
+    console.log("✅ Processing completed.\n");
   } catch (err) {
     console.error("❌ Error in cron:", err);
   }
