@@ -9,7 +9,7 @@ dotenv.config();
 
 const maxQtyGasAuthorized = 180000n;
 const maxPriceAuthorizeForOneGas = 10n ** 15n;
-const provider_strk = new RpcProvider({
+export const provider_strk = new RpcProvider({
     nodeUrl: process.env.STRK_RPC_URL,
 });
 
@@ -35,9 +35,10 @@ export async function checkBalance(): Promise<any> {
     const tokenStrk = await getERC20Contract();
     const tx = await tokenStrk.balance_of("0x00d5944409b0e99d8671207c1a1f8db223a258f2effa29efdf2cbddf0a85d1b1");
     console.log(tx);
+    return tx;
 }
 
-// const balance = checkBalance();
+const balance = checkBalance();
 
 export async function getVaultContract(): Promise<Contract> {
     const vault_address = "0x06224ff8cd622bb4e960b2dd59f868e4c85bc6d27b6a2ba5cf22366022cb32c4";
@@ -88,9 +89,9 @@ export async function approveVault(amount: Number) {
     // }
 }
 
-export async function deposit() {
+export async function deposit(amount: Number) {
     const vault = await getVaultContract();
-    const myCall2 = vault.populate("deposit", [100]);
+    const myCall2 = vault.populate("deposit", [amount]);
 
     const tx2 = await account.execute(myCall2, {
         version: constants.TRANSACTION_VERSION.V3,
@@ -111,10 +112,10 @@ export async function deposit() {
     console.log("Transfer tx hash:", tx2.transaction_hash);
 }
 
-export async function transferToTreasury() {
+export async function transferToTreasury(amount: Number) {
     const vault = await getVaultContract();
     const myCall3 = vault.populate("transferToTreasury", [
-        10,
+        amount,
         "0xb1CF4E0a37138660D0760944229E474c8A7DBC21",
         "0x0594c1582459ea03f77deaf9eb7e3917d6994a03c13405ba42867f83d85f085d",
         "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
@@ -139,6 +140,8 @@ export async function transferToTreasury() {
     });
     console.log("Transfer tx hash:", tx3.transaction_hash);
 }
+
+//deposit(10);
 
 
 //De sau khong can goi
