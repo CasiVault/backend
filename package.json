@@ -13,6 +13,7 @@
         "mongoose": "^8.15.0",
         "node-cron": "^3.0.2",
         "swagger-ui-express": "^5.0.1",
+        "starknet": "^6.24.1",
         "winston": "^3.8.2"
     },
     
