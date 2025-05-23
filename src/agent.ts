@@ -25,6 +25,8 @@ export class TulipAgent {
 
     public async processing(protocols: IProtocolService[]): Promise<void> {
         try {
+            //checkIndex: start -> finish
+            // array [user]
             console.log("🔍 Finding best protocol...");
             const bestProtocol = await getBestProtocol(protocols);
             console.log(`Best protocol selected: ${bestProtocol.name}`);
@@ -33,10 +35,13 @@ export class TulipAgent {
             await bestProtocol.transferAllToProtocol(protocols);
             console.log("Transfer complete.");
 
-            const withdrawAmount = await this.getWithdrawAmountForUserRequest();
+            const withdrawAmount = await this.getWithdrawAmountForUserRequest();//final
             console.log(`Calculated withdraw amount: ${withdrawAmount}`);
+            //withdraw
+            //bug
 
             if (withdrawAmount > 0) {
+                //array[user] -> checked
                 console.log("Withdrawing from best protocol to treasury...");
                 await bestProtocol.withdraw();
                 console.log("Withdrawal to treasury complete.");
@@ -48,8 +53,13 @@ export class TulipAgent {
                 await tx.wait();
                 console.log("Bridging complete.");
 
+                //L1 -> L2
+                //checkEvent by cronjob
+
                 console.log("Processing user withdrawal requests in vault...");
                 await this.withdrawProcessForUserRequest(withdrawAmount);
+
+                //array[user] -> Finished
                 console.log("Vault user withdrawals processed.");
             } else {
                 console.log("No withdrawal requests found.");
