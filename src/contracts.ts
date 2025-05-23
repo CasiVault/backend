@@ -1,11 +1,11 @@
 import { ethers } from "ethers";
 import * as dotenv from "dotenv";
-import { Account, RpcProvider, json, Contract, ec, constants, num, hash, LegacyContractClass, Abi, provider } from "starknet";
+import { Account, RpcProvider, json, Contract, ec, constants, num, hash, LegacyContractClass, Abi } from "starknet";
 const fs = require("fs");
 dotenv.config();
 
-// export const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-// export const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+export const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
+export const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
 
 const maxQtyGasAuthorized = 180000n;
 const maxPriceAuthorizeForOneGas = 10n ** 15n;
@@ -20,6 +20,29 @@ export const account = new Account(provider_strk, accountAddress, privateKey, un
 
 const erc20_address = process.env.TOKEN_STRK || "";
 
+export async function checkEvent(block_number: number): Promise<any> {
+    const lastBlock = await provider_strk.getBlock('latest');
+    const keyFilter = [[num.toHex(hash.starknetKeccak('DepositHandled'))]];
+    const eventsList = await provider_strk.getEvents({
+        address: "0x0594c1582459ea03f77deaf9eb7e3917d6994a03c13405ba42867f83d85f085d",
+        from_block: { block_number: block_number },
+        to_block: { block_number: lastBlock.block_number },
+        keys: keyFilter,
+        chunk_size: 10,
+    });
+    console.log(eventsList);
+    for (const event of eventsList.events) {
+        console.log('--- Event ---');
+        console.log('From Address:', event.from_address);
+        console.log('Keys:', event.keys);
+        console.log('Data:', event.data);
+        if (event.keys[2] == process.env.ACCOUNT_ADDRESS) {
+            console.log("Success");
+        };
+        break;
+    }
+}
+
 async function getERC20Contract(): Promise<Contract> {
     const testAbi = await provider_strk.getClassAt(erc20_address);
     if (testAbi === undefined || !("abi" in testAbi)) {
@@ -31,14 +54,14 @@ async function getERC20Contract(): Promise<Contract> {
     return erc20;
 }
 
-export async function checkBalance(): Promise<any> {
+export async function checkBalance(user: String): Promise<any> {
     const tokenStrk = await getERC20Contract();
-    const tx = await tokenStrk.balance_of("0x00d5944409b0e99d8671207c1a1f8db223a258f2effa29efdf2cbddf0a85d1b1");
+    const tx = await tokenStrk.balance_of(user);
     console.log(tx);
     return tx;
 }
 
-const balance = checkBalance();
+const balance = checkBalance("0x00d5944409b0e99d8671207c1a1f8db223a258f2effa29efdf2cbddf0a85d1b1");
 
 export async function getVaultContract(): Promise<Contract> {
     const vault_address = "0x06224ff8cd622bb4e960b2dd59f868e4c85bc6d27b6a2ba5cf22366022cb32c4";
@@ -141,35 +164,32 @@ export async function transferToTreasury(amount: Number) {
     console.log("Transfer tx hash:", tx3.transaction_hash);
 }
 
-//deposit(10);
 
+import compoundV3ModuleABI from "./abi/CompoundV3Module.json";
+import aaveV3ModuleABI from "./abi/AAVEModule.json";
+import sepoliaTreasuryABI from "./abi/SepoliaTreasury.json";
+import erc20ABI from "./abi/ERC20.json";
 
-//De sau khong can goi
-// import compoundV3ModuleABI from "./abi/CompoundV3Module.json";
-// import aaveV3ModuleABI from "./abi/AAVEModule.json";
-// import sepoliaTreasuryABI from "./abi/SepoliaTreasury.json";
-// import erc20ABI from "./abi/ERC20.json";
+export const compoundV3ModuleContract = new ethers.Contract(
+    process.env.COMPOUND_V3_MODULE_ADDRESS!,
+    compoundV3ModuleABI,
+    wallet
+);
 
-// export const compoundV3ModuleContract = new ethers.Contract(
-//   process.env.COMPOUND_V3_MODULE_ADDRESS!,
-//   compoundV3ModuleABI,
-//   wallet
-// );
+export const aaveV3ModuleContract = new ethers.Contract(
+    process.env.AAVE_V3_MODULE_ADDRESS!,
+    aaveV3ModuleABI,
+    wallet
+);
 
-// export const aaveV3ModuleContract = new ethers.Contract(
-//   process.env.AAVE_V3_MODULE_ADDRESS!,
-//   aaveV3ModuleABI,
-//   wallet
-// );
+export const tokenContract = new ethers.Contract(
+    process.env.TOKEN_ADDRESS!,
+    erc20ABI,
+    wallet
+);
 
-// export const tokenContract = new ethers.Contract(
-//   process.env.TOKEN_ADDRESS!,
-//   erc20ABI,
-//   wallet
-// );
-
-// export const treasuryContract = new ethers.Contract(
-//   process.env.TREASURY_ADDRESS!,
-//   sepoliaTreasuryABI,
-//   wallet
-// );
+export const treasuryContract = new ethers.Contract(
+    process.env.TREASURY_ADDRESS!,
+    sepoliaTreasuryABI,
+    wallet
+);
