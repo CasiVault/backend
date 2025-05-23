@@ -4,8 +4,8 @@ import { Account, RpcProvider, json, Contract, ec, constants, num, hash, LegacyC
 const fs = require("fs");
 dotenv.config();
 
-// export const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-// export const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+export const provider_eth = new ethers.JsonRpcProvider(process.env.RPC_URL);
+export const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider_eth);
 
 const maxQtyGasAuthorized = 180000n;
 const maxPriceAuthorizeForOneGas = 10n ** 15n;
@@ -145,31 +145,31 @@ export async function transferToTreasury(amount: Number) {
 
 
 //De sau khong can goi
-// import compoundV3ModuleABI from "./abi/CompoundV3Module.json";
-// import aaveV3ModuleABI from "./abi/AAVEModule.json";
-// import sepoliaTreasuryABI from "./abi/SepoliaTreasury.json";
-// import erc20ABI from "./abi/ERC20.json";
+import compoundV3ModuleABI from "./abi/CompoundV3Module.json";
+import aaveV3ModuleABI from "./abi/AAVEModule.json";
+import sepoliaTreasuryABI from "./abi/SepoliaTreasury.json";
+import erc20ABI from "./abi/ERC20.json";
 
-// export const compoundV3ModuleContract = new ethers.Contract(
-//   process.env.COMPOUND_V3_MODULE_ADDRESS!,
-//   compoundV3ModuleABI,
-//   wallet
-// );
+export const compoundV3ModuleContract = new ethers.Contract(
+  process.env.COMPOUND_V3_MODULE_ADDRESS!,
+  compoundV3ModuleABI,
+  wallet
+);
 
-// export const aaveV3ModuleContract = new ethers.Contract(
-//   process.env.AAVE_V3_MODULE_ADDRESS!,
-//   aaveV3ModuleABI,
-//   wallet
-// );
+export const aaveV3ModuleContract = new ethers.Contract(
+  process.env.AAVE_V3_MODULE_ADDRESS!,
+  aaveV3ModuleABI,
+  wallet
+);
 
-// export const tokenContract = new ethers.Contract(
-//   process.env.TOKEN_ADDRESS!,
-//   erc20ABI,
-//   wallet
-// );
+export const tokenContract = new ethers.Contract(
+  process.env.TOKEN_ADDRESS!,
+  erc20ABI,
+  wallet
+);
 
-// export const treasuryContract = new ethers.Contract(
-//   process.env.TREASURY_ADDRESS!,
-//   sepoliaTreasuryABI,
-//   wallet
-// );
+export const treasuryContract = new ethers.Contract(
+  process.env.TREASURY_ADDRESS!,
+  sepoliaTreasuryABI,
+  wallet
+);
