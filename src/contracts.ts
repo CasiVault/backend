@@ -164,32 +164,35 @@ export async function transferToTreasury(amount: Number) {
     console.log("Transfer tx hash:", tx3.transaction_hash);
 }
 
+//deposit(10);
 
+
+//De sau khong can goi
 import compoundV3ModuleABI from "./abi/CompoundV3Module.json";
 import aaveV3ModuleABI from "./abi/AAVEModule.json";
 import sepoliaTreasuryABI from "./abi/SepoliaTreasury.json";
 import erc20ABI from "./abi/ERC20.json";
 
 export const compoundV3ModuleContract = new ethers.Contract(
-    process.env.COMPOUND_V3_MODULE_ADDRESS!,
-    compoundV3ModuleABI,
-    wallet
+  process.env.COMPOUND_V3_MODULE_ADDRESS!,
+  compoundV3ModuleABI,
+  wallet
 );
 
 export const aaveV3ModuleContract = new ethers.Contract(
-    process.env.AAVE_V3_MODULE_ADDRESS!,
-    aaveV3ModuleABI,
-    wallet
+  process.env.AAVE_V3_MODULE_ADDRESS!,
+  aaveV3ModuleABI,
+  wallet
 );
 
 export const tokenContract = new ethers.Contract(
-    process.env.TOKEN_ADDRESS!,
-    erc20ABI,
-    wallet
+  process.env.TOKEN_ADDRESS!,
+  erc20ABI,
+  wallet
 );
 
 export const treasuryContract = new ethers.Contract(
-    process.env.TREASURY_ADDRESS!,
-    sepoliaTreasuryABI,
-    wallet
+  process.env.TREASURY_ADDRESS!,
+  sepoliaTreasuryABI,
+  wallet
 );

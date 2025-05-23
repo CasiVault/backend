@@ -1,4 +1,3 @@
-// index.ts
 import cron from "node-cron";
 import { TulipAgent } from "./agent";
 import { CompoundV3Service } from "./services/CompoundV3Service";
@@ -9,21 +8,22 @@ import { Account, RpcProvider, json, Contract, ec, constants, num, hash, LegacyC
 
 dotenv.config();
 
-// const agent = new TulipAgent();
-// const protocols = [new CompoundV3Service(), new AaveV3Service()];
+const agent = new TulipAgent();
+const protocols = [new CompoundV3Service(), new AaveV3Service()];
 
-// cron.schedule("* * * * *", async () => {
-//     try {
-//         console.log("⏰ Running TulipAgent check...");
-//         await agent.checkAndExecuteAction(protocols);
-//         console.log("✅ Check completed.\n");
-//     } catch (err) {
-//         console.error("❌ Error in cron:", err);
-//     }
-// });
+cron.schedule("* * * * *", async () => {
+  try {
+    console.log("⏰ Running TulipAgent processing...");
+    await agent.processing(protocols);
+    console.log("✅ Processing completed.\n");
+  } catch (err) {
+    console.error("❌ Error in cron:", err);
+  }
+});
+
 
 export const checkBalanceJob = cron.schedule("*/0.1 * * * *", async () => {
-  checkEvent(75555);
+    checkEvent(75555);
 });
 
 checkBalanceJob.start();
