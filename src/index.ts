@@ -11,19 +11,19 @@ dotenv.config();
 const agent = new TulipAgent();
 const protocols = [new CompoundV3Service(), new AaveV3Service()];
 
-cron.schedule("* * * * *", async () => {
-  try {
-    console.log("⏰ Running TulipAgent processing...");
-    await agent.processing(protocols);
-    console.log("✅ Processing completed.\n");
-  } catch (err) {
-    console.error("❌ Error in cron:", err);
-  }
+export const checkBalanceJob = cron.schedule("* * * * *", async () => {
+    try {
+        console.log("⏰ Running TulipAgent processing...");
+        await agent.processing(protocols);
+        console.log("✅ Processing completed.\n");
+    } catch (err) {
+        console.error("❌ Error in cron:", err);
+    }
 });
 
-
-export const checkBalanceJob = cron.schedule("*/0.1 * * * *", async () => {
-    checkEvent(75555);
-});
+// export const checkBalanceJob = cron.schedule("*/0.1 * * * *", async () => {
+//     console.log(await agent.getWithdrawAmountForUserRequest());
+//     await agent.withdrawProcessForUserRequest();
+// });
 
 checkBalanceJob.start();
