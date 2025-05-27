@@ -14,9 +14,9 @@ export class HandlePendingWithdrawRequest {
         //TODO: Call the function from contract to send withdraw requests to L1
 
 
-        //Update the status of the withdraw request to "sent"
+        //Update the status of the withdraw request to "SENT"
         for (const withdrawRequest of withdrawRequests) {
-            withdrawRequest.status = "sent";
+            withdrawRequest.status = "SENT";
         }
         await this.withdrawRequestService.upsertWithdrawRequest(withdrawRequests);
     }

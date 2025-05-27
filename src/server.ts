@@ -6,14 +6,17 @@ import morgan from "morgan";
 import cors from "cors";
 import * as dotenv from "dotenv";
 import { Config } from "./common/config";
-
+import { UserRequestsRoute } from "./routes/UserRequestsRoute";
 dotenv.config();
 
 class Server {
     public app: Application;
+    private userRequestsRouter: UserRequestsRoute;
 
     constructor() {
         this.app = express();
+        this.userRequestsRouter = new UserRequestsRoute();
+
         this.config();
         this.routes();
         this.configSwagger();
@@ -39,6 +42,7 @@ class Server {
         this.app.get("/ping", async (req, res) => {
             res.send("Hello World!");
         });
+        this.app.use("/user-requests", this.userRequestsRouter.router);
     }
 
     private configSwagger(): void {

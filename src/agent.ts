@@ -3,11 +3,19 @@ import { getBestProtocol } from "./services/getBestProtocol";
 import { IProtocolService } from "./services/IProtocolService";
 import { ethers } from "ethers";
 import { treasuryContract, transferToTreasury, getTotalWithdraw, getRangeIndex, withdraw, getRequestWithdraw, checkBalance } from "./contracts";
+import { WithdrawRequestService } from "./services/WithdrawRequestService";
 
 dotenv.config();
 
 export class TulipAgent {
     //TODO: thay bằng hàm tính tổng lượng tiền user request
+    private withdrawRequestService: WithdrawRequestService;
+
+    constructor() {
+        this.withdrawRequestService = new WithdrawRequestService();
+    }
+
+    
     async getWithdrawAmountForUserRequest(): Promise<number> {
         return await getTotalWithdraw();
     }
@@ -37,6 +45,7 @@ export class TulipAgent {
     public async processing(protocols: IProtocolService[]): Promise<void> {
         try {
             //checkIndex: start -> finish
+            const [start, finish] = await getRangeIndex();
             // array [user]
             console.log("🔍 Finding best protocol...");
             const bestProtocol = await getBestProtocol(protocols);
@@ -52,6 +61,7 @@ export class TulipAgent {
 
             if (withdrawAmount > 0) {
                 //array[user] -> checked
+                await this.withdrawRequestService.changeStatus(start, finish, "CHECKED");
                 console.log("Withdrawing from best protocol to treasury...");
                 await bestProtocol.withdraw();
                 console.log("Withdrawal to treasury complete.");
@@ -78,6 +88,7 @@ export class TulipAgent {
                 await this.withdrawProcessForUserRequest();
 
                 //array[user] -> Finished
+                await this.withdrawRequestService.changeStatus(start, finish, "FINISHED");
                 console.log("Vault user withdrawals processed.");
             } else {
                 console.log("No withdrawal requests found.");

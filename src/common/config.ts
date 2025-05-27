@@ -7,7 +7,7 @@ export const Config = {
     IS_PRODUCTION: process.env.IS_PRODUCTION === "true",
     HOST: process.env.HOST ?? "localhost",
     PORT: process.env.PORT ?? 8000,
-    API_SCHEMES: process.env.API_SCHEMES ?? 'https',
+    API_SCHEMES: process.env.API_SCHEMES ?? 'http',
 }
 
 

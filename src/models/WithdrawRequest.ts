@@ -2,19 +2,23 @@ import mongoose from "mongoose";
 import { FaceitDB } from "../common/connections/MongoDB";
 
 export interface IWithdrawRequest {
-    _id: string;
-    address: string;
-    amount: string;
+    _id: number;
+    sender: string;
+    recipient: string;
+    amount: string; 
     status: string;
-    timestamp: number;
 }
 
 const WithdrawRequest = new mongoose.Schema<IWithdrawRequest>({
     _id: {
+        type: Number,
+        required: true,
+    },
+    sender: {
         type: String,
         required: true,
     },
-    address: {
+    recipient: {
         type: String,
         required: true,
     },
@@ -24,10 +28,6 @@ const WithdrawRequest = new mongoose.Schema<IWithdrawRequest>({
     },
     status: {
         type: String,
-        required: true,
-    },
-    timestamp: {
-        type: Number,
         required: true,
     },
 });
