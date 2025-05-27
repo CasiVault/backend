@@ -28,8 +28,9 @@ export class TulipAgent {
     //TODO: check xem balance của vault có > 0 thì chuyển tiền từ vault về treasury
     async transferFromVaultToTreasury(): Promise<void> {
         const balance = await checkBalance(process.env.TULIP_CONTRACT || "");
-        await transferToTreasury(balance);
-
+        if(balance > 0) {
+            await transferToTreasury(balance);
+        }
         return;
     }
 
@@ -63,7 +64,15 @@ export class TulipAgent {
                 console.log("Bridging complete.");
 
                 //L1 -> L2
-                //checkEvent by cronjob
+                //checkEvent by setInterval
+
+                const balanceCheckInterval = setInterval(async() => {
+                    let balance = await checkBalance(process.env.TULIP_CONTRACT  || "");
+                    if(balance >= withdrawAmount) {
+                        clearInterval(balanceCheckInterval);
+                        return;
+                    }
+                }, 30000);
 
                 console.log("Processing user withdrawal requests in vault...");
                 await this.withdrawProcessForUserRequest();
