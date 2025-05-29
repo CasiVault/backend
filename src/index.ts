@@ -3,7 +3,7 @@ import { TulipAgent } from "./agent";
 import { CompoundV3Service } from "./services/CompoundV3Service";
 import { AaveV3Service } from "./services/AaveV3Service";
 import dotenv from "dotenv";
-import { checkBalance, provider_strk, checkEvent } from "./contracts";
+import { checkBalance, provider_strk,  } from "./contracts";
 import { Account, RpcProvider, json, Contract, ec, constants, num, hash, LegacyContractClass, Abi, provider } from "starknet";
 
 dotenv.config();
