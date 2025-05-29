@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import * as dotenv from "dotenv";
-import { Account, RpcProvider, json, Contract, ec, constants, num, hash, LegacyContractClass, Abi } from "starknet";
+import { Account, RpcProvider, json, Contract, ec, constants, num, hash, LegacyContractClass, Abi, CallData, cairo, uint256 } from "starknet";
 const fs = require("fs");
 dotenv.config();
 
@@ -57,6 +57,97 @@ async function getFaceitContract(): Promise<Contract> {
     faceit.connect(account);
     return faceit;
 }
+
+async function register(): Promise<any> {
+    const faceit = await getFaceitContract();
+    const myCall1 = faceit.populate("register");
+    const { transaction_hash: txH } = await account.execute(myCall1, {
+        version: constants.TRANSACTION_VERSION.V3,
+        maxFee: 1e15,
+        tip: 1e13,
+        paymasterData: [],
+        resourceBounds: {
+            l1_gas: {
+                max_amount: num.toHex(maxQtyGasAuthorized),
+                max_price_per_unit: num.toHex(maxPriceAuthorizeForOneGas),
+            },
+            l2_gas: {
+                max_amount: num.toHex(0),
+                max_price_per_unit: num.toHex(0),
+            },
+        },
+    });
+    console.log("tx: ", txH);
+    const txR = await provider_strk.waitForTransaction(txH);
+    if (txR.isSuccess()) {
+        console.log("Paid fee =", txR.actual_fee);
+        console.log("events: ", txR.events);
+    }
+
+}
+
+//register();
+
+
+async function raiseFund(amount: number, gameId: Number): Promise<any> {
+    // const erc20 = await getERC20Contract();
+    // const faceit = await getFaceitContract();
+    const amountUint256 = uint256.bnToUint256(BigInt(amount));
+    const multiCall = await account.execute([
+        {
+          contractAddress:
+            "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+          entrypoint: "transfer",
+          calldata: CallData.compile({
+            recipient:
+              "0x034916ebcace050985107530279bf2fa43b539eddafb9471f13d8c253407f8c0",
+            amount: amountUint256,
+          }),
+        },
+        // {
+        //   contractAddress:
+        //     "0x034916ebcace050985107530279bf2fa43b539eddafb9471f13d8c253407f8c0",
+        //   entrypoint: "raiseFund",
+        //   calldata: CallData.compile({
+        //     gameId: gameId,
+        //     amountToken: amount,
+        //   }),
+        // },
+      ]);
+      await provider_strk.waitForTransaction(multiCall.transaction_hash);
+}
+
+raiseFund(10, 1);
+
+async function transfer(amount: Number): Promise<any> {
+    const erc20 = await getERC20Contract();
+    const vault = await getVaultContract();
+    const myCall1 = erc20.populate("transfer", [faceit_address, amount]);
+    const { transaction_hash: txH } = await account.execute(myCall1, {
+        version: constants.TRANSACTION_VERSION.V3,
+        maxFee: 1e15,
+        tip: 1e13,
+        paymasterData: [],
+        resourceBounds: {
+            l1_gas: {
+                max_amount: num.toHex(maxQtyGasAuthorized),
+                max_price_per_unit: num.toHex(maxPriceAuthorizeForOneGas),
+            },
+            l2_gas: {
+                max_amount: num.toHex(0),
+                max_price_per_unit: num.toHex(0),
+            },
+        },
+    });
+    console.log("tx: ", txH);
+    const txR = await provider_strk.waitForTransaction(txH);
+    if (txR.isSuccess()) {
+        console.log("Paid fee =", txR.actual_fee);
+        console.log("events: ", txR.events);
+    }
+}
+
+//transfer(10);
 
 async function getERC20Contract(): Promise<Contract> {
     const testAbi = await provider_strk.getClassAt(erc20_address);
