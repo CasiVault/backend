@@ -7,15 +7,19 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 import { Config } from "./common/config";
 import { UserRequestsRoute } from "./routes/UserRequestsRoute";
+import { GameRoute } from "./routes/GameRoute";
+import { CronJobs } from "./cronJobs";
 dotenv.config();
 
 class Server {
     public app: Application;
     private userRequestsRouter: UserRequestsRoute;
+    private gameRouter: GameRoute;
 
     constructor() {
         this.app = express();
         this.userRequestsRouter = new UserRequestsRoute();
+        this.gameRouter = new GameRoute();
 
         this.config();
         this.routes();
@@ -43,6 +47,7 @@ class Server {
             res.send("Hello World!");
         });
         this.app.use("/user-requests", this.userRequestsRouter.router);
+        this.app.use("/game", this.gameRouter.router);
     }
 
     private configSwagger(): void {
@@ -59,6 +64,7 @@ class Server {
 
 async function startServer(): Promise<void> {
     const server = new Server();
+    CronJobs.start();
     server.start();
 }
 
