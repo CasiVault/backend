@@ -3,6 +3,7 @@ import { WithdrawRequestService } from "../services/WithdrawRequestService";
 import { sendRes } from "../common/responses";
 import { BadRequest } from "../common/errors/BadRequest";
 import { ServerError } from "../common/errors/ServerError";
+import { trimHexAddress } from "../utils/DataUtils";
 
 export class UserRequestsController {
     private withdrawRequestService: WithdrawRequestService;
@@ -13,13 +14,14 @@ export class UserRequestsController {
     }
 
     public async getWithdrawRequestBySender(req: Request, res: Response) {
-        const { sender } = req.query;
+        let { sender } = req.query;
 
         if (!sender || typeof sender !== "string") {
             const error = new BadRequest("Sender is required and must be a string");
             sendRes(res, error, null);
             return;
         }
+        sender = trimHexAddress(sender);
         console.log(sender);
         try {
             const response = await this.withdrawRequestService.getWithdrawRequestBySender(sender);

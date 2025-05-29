@@ -19,6 +19,8 @@ const GameInfoSchema = new mongoose.Schema<IGameInfo>({
     totalFund: { type: String, required: true },
     gameName: { type: String, required: true },
     Description: { type: String, required: true },
-});
+},{
+    versionKey: false
+  });
 
 export default FaceitDB.model<IGameInfo>("GameInfo", GameInfoSchema, "game_info");

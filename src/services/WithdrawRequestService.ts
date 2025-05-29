@@ -28,9 +28,10 @@ export class WithdrawRequestService {
 
     public async getWithdrawRequestBySender(sender: string) {
         console.log("Getting withdraw request by sender: ", sender);
-        const withdrawRequest = await WithdrawRequest.findOne({ sender });
-        console.log("Found withdraw request: ", withdrawRequest);
-        return withdrawRequest;
+        const withdrawRequests = await WithdrawRequest.find({ sender });
+        
+        console.log("Found withdraw request: ", withdrawRequests);
+        return withdrawRequests;
     }
 
     public async changeStatus(start: number, finish: number, status: string) {
