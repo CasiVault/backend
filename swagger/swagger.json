@@ -1,9 +1,9 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "User Requests API",
+        "title": "User Requests & Game API",
         "version": "1.0.0",
-        "description": "API documentation for user requests endpoints"
+        "description": "API documentation for user requests and game endpoints"
     },
     "paths": {
         "/user-requests/withdraw-requests": {
@@ -113,6 +113,127 @@
                         }
                     }
                 }
+            }
+        },
+        "/game/register": {
+            "post": {
+                "tags": ["Game"],
+                "summary": "Register a new game",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/GameInfo" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Game registered or updated successfully" },
+                    "400": { "description": "Bad Request" },
+                    "500": { "description": "Server Error" }
+                }
+            }
+        },
+        "/game/get-info": {
+            "get": {
+                "tags": ["Game"],
+                "summary": "Get game info by idGame",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "idGame",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "The game ID"
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "Game info returned" },
+                    "400": { "description": "Bad Request" },
+                    "500": { "description": "Server Error" }
+                }
+            }
+        },
+        "/game/update": {
+            "put": {
+                "tags": ["Game"],
+                "summary": "Update a game",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/GameInfoUpdate" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Game updated successfully" },
+                    "400": { "description": "Bad Request" },
+                    "500": { "description": "Server Error" }
+                }
+            }
+        },
+        "/game/delete": {
+            "delete": {
+                "tags": ["Game"],
+                "summary": "Delete a game",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "idGame": { "type": "string" }
+                                },
+                                "required": ["idGame"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Game deleted successfully" },
+                    "400": { "description": "Bad Request" },
+                    "500": { "description": "Server Error" }
+                }
+            }
+        },
+        "/game/all": {
+            "get": {
+                "tags": ["Game"],
+                "summary": "Get all games",
+                "responses": {
+                    "200": { "description": "List of all games" },
+                    "500": { "description": "Server Error" }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "GameInfo": {
+                "type": "object",
+                "properties": {
+                    "idGame": { "type": "string" },
+                    "host": { "type": "string" },
+                    "isFinished": { "type": "boolean" },
+                    "totalFund": { "type": "string" },
+                    "gameName": { "type": "string" },
+                    "Description": { "type": "string" }
+                },
+                "required": ["idGame", "host", "isFinished", "totalFund", "gameName", "Description"]
+            },
+            "GameInfoUpdate": {
+                "type": "object",
+                "properties": {
+                    "idGame": { "type": "string" },
+                    "host": { "type": "string" },
+                    "isFinished": { "type": "boolean" },
+                    "totalFund": { "type": "string" },
+                    "gameName": { "type": "string" },
+                    "Description": { "type": "string" }
+                },
+                "required": ["idGame"]
             }
         }
     }
