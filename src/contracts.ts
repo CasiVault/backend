@@ -22,27 +22,40 @@ const erc20_address = process.env.TOKEN_STRK || "";
 
 const tulip_address = process.env.TULIP_CONTRACT || "";
 
-export async function checkEvent(block_number: number): Promise<any> {
-    const lastBlock = await provider_strk.getBlock("latest");
-    const keyFilter = [[num.toHex(hash.starknetKeccak("DepositHandled"))]];
-    const eventsList = await provider_strk.getEvents({
-        address: "0x0594c1582459ea03f77deaf9eb7e3917d6994a03c13405ba42867f83d85f085d",
-        from_block: { block_number: block_number },
-        to_block: { block_number: lastBlock.block_number },
-        keys: keyFilter,
-        chunk_size: 10,
-    });
-    console.log(eventsList);
-    for (const event of eventsList.events) {
-        console.log("--- Event ---");
-        console.log("From Address:", event.from_address);
-        console.log("Keys:", event.keys);
-        console.log("Data:", event.data);
-        if (event.keys[2] == process.env.ACCOUNT_ADDRESS) {
-            console.log("Success");
-        }
-        break;
+const faceit_address = process.env.FACEIT_CONTRACT || "";
+
+// export async function checkEvent(block_number: number): Promise<any> {
+//     const lastBlock = await provider_strk.getBlock("latest");
+//     const keyFilter = [[num.toHex(hash.starknetKeccak("DepositHandled"))]];
+//     const eventsList = await provider_strk.getEvents({
+//         address: "0x0594c1582459ea03f77deaf9eb7e3917d6994a03c13405ba42867f83d85f085d",
+//         from_block: { block_number: block_number },
+//         to_block: { block_number: lastBlock.block_number },
+//         keys: keyFilter,
+//         chunk_size: 10,
+//     });
+//     console.log(eventsList);
+//     for (const event of eventsList.events) {
+//         console.log("--- Event ---");
+//         console.log("From Address:", event.from_address);
+//         console.log("Keys:", event.keys);
+//         console.log("Data:", event.data);
+//         if (event.keys[2] == process.env.ACCOUNT_ADDRESS) {
+//             console.log("Success");
+//         }
+//         break;
+//     }
+// }
+
+async function getFaceitContract(): Promise<Contract> {
+    const faceitAbi = await provider_strk.getClassAt(faceit_address);
+    if (faceitAbi === undefined || !("abi" in faceitAbi)) {
+        throw new Error("no abi.");
     }
+
+    const faceit = new Contract(faceitAbi.abi, faceit_address, provider_strk);
+    faceit.connect(account);
+    return faceit;
 }
 
 async function getERC20Contract(): Promise<Contract> {
@@ -147,8 +160,7 @@ export async function deposit(amount: Number) {
     console.log("Transfer tx hash:", tx2.transaction_hash);
     const txR = await provider_strk.waitForTransaction(tx2.transaction_hash);
     if (txR.isSuccess()) {
-        console.log("Paid fee =", txR.actual_fee);
-        console.log("events: ", txR.events);
+        
     }
 }
 
