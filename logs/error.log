@@ -7,3 +7,5 @@
 2025-05-30 15:28:30:2830 [CronJob] [[31merror[39m]: [31mError crawling withdraw requests connect ETIMEDOUT 159.143.58.57:27017[39m
 2025-05-30 15:29:30:2930 [CronJob] [[31merror[39m]: [31mError crawling withdraw requests connect ETIMEDOUT 159.143.58.57:27017[39m
 2025-05-30 17:17:42:1742 [CronJob] [[31merror[39m]: [31mError crawling withdraw requests connect ETIMEDOUT 159.143.58.71:27017[39m
+2025-05-30 17:47:10:4710 [CronJob] [[31merror[39m]: [31mError crawling withdraw requests fetch failed[39m
+2025-05-30 18:15:10:1510 [CronJob] [[31merror[39m]: [31mError crawling withdraw requests fetch failed[39m

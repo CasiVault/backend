@@ -72,7 +72,9 @@ export class GameController {
 
     public async getAllGames(req: Request, res: Response) {
         try {
-            const result = await this.gameService.getAllGames();
+            const skip = parseInt((req.query.skip as string) || "0", 10);
+            const limit = parseInt((req.query.limit as string) || "10", 10);
+            const result = await this.gameService.getAllGames(skip, limit);
             sendRes(res, null, result);
         } catch (error) {
             sendRes(res, new ServerError("Failed to get all games"), null);

@@ -7,12 +7,12 @@ export class GameService {
     public async upsertGame(gameData: any) {
         try {
             gameData._id = gameData.idGame;
-            const filter = {_id: gameData.idGame };
+            const filter = { _id: gameData.idGame };
             const configs = { upsert: true, new: true, setDefaultsOnInsert: true };
-            
+
             const result = await GameInfo.findOneAndUpdate(filter, { $set: gameData }, configs);
             logger.info(`Upserted game with id: ${gameData.idGame}`);
-    
+
             return result;
         } catch (error) {
             logger.error(`Error upserting game: ${error}`);
@@ -70,12 +70,11 @@ export class GameService {
         }
     }
 
-    public async getAllGames() {
+    public async getAllGames(skip = 0, limit = 10) {
         try {
-            const result = await GameInfo.find();
-            logger.info(`Fetched all games`);
-
-            return result;
+            const [data, total] = await Promise.all([GameInfo.find().skip(skip).limit(limit), GameInfo.countDocuments()]);
+            logger.info(`Fetched games with pagination: skip=${skip}, limit=${limit}`);
+            return { data, total };
         } catch (error) {
             logger.error(`Error getting all games: ${error}`);
             throw error;
