@@ -11,7 +11,7 @@ dotenv.config();
 const agent = new TulipAgent();
 const protocols = [new CompoundV3Service(), new AaveV3Service()];
 
-export const checkBalanceJob = cron.schedule("* * * * *", async () => {
+export const checkBalanceJob = cron.schedule("*/1 * * * *", async () => {
     try {
         console.log("⏰ Running TulipAgent processing...");
         await agent.processing(protocols);

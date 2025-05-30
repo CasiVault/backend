@@ -35,16 +35,22 @@ export class AaveV3Service implements IProtocolService {
 
   async withdraw(): Promise<string> {
     let balanceUSDCInAaveV3 = await this.getStakedBalance();
-    console.log("Withdrawing from AaveV3 with amount: ", balanceUSDCInAaveV3);
+    if (balanceUSDCInAaveV3 > 0) {
+      console.log("Withdrawing from AaveV3 with amount: ", balanceUSDCInAaveV3);
 
-    const unsignedWithdrawTx = await aaveV3ModuleContract.interface.encodeFunctionData("withdraw", ["0x"]);
+      const unsignedWithdrawTx = await aaveV3ModuleContract.interface.encodeFunctionData("withdraw", ["0x"]);
 
-    let finalTx = await treasuryContract.callModule(aaveV3ModuleContract.getAddress(), 0, unsignedWithdrawTx);
+      let finalTx = await treasuryContract.callModule(aaveV3ModuleContract.getAddress(), 0, unsignedWithdrawTx);
 
-    console.log("Transaction withdraw from AaveV3 submitted: ", finalTx.hash);
-    await finalTx.wait();
-    console.log("Transaction withdraw from AaveV3 confirmed");
-    return finalTx.hash;
+      console.log("Transaction withdraw from AaveV3 submitted: ", finalTx.hash);
+      await finalTx.wait();
+      console.log("Transaction withdraw from AaveV3 confirmed");
+      return finalTx.hash;
+    } else {
+      console.log("No balance to withdraw from CompoundV3.");
+      return "";
+    }
+
   }
 
   async transferAllToProtocol(protocols: IProtocolService[]): Promise<void> {

@@ -86,13 +86,12 @@ async function register(): Promise<any> {
 
 }
 
-//register();
 
-
-async function raiseFund(amount: number, gameId: Number): Promise<any> {
+async function raiseFund(amount: number, gameId: number): Promise<any> {
     // const erc20 = await getERC20Contract();
     // const faceit = await getFaceitContract();
     const amountUint256 = uint256.bnToUint256(BigInt(amount));
+    const gameIdUint256 = uint256.bnToUint256(BigInt(gameId));
     const multiCall = await account.execute([
         {
           contractAddress:
@@ -100,24 +99,24 @@ async function raiseFund(amount: number, gameId: Number): Promise<any> {
           entrypoint: "transfer",
           calldata: CallData.compile({
             recipient:
-              "0x034916ebcace050985107530279bf2fa43b539eddafb9471f13d8c253407f8c0",
+              faceit_address,
             amount: amountUint256,
           }),
         },
-        // {
-        //   contractAddress:
-        //     "0x034916ebcace050985107530279bf2fa43b539eddafb9471f13d8c253407f8c0",
-        //   entrypoint: "raiseFund",
-        //   calldata: CallData.compile({
-        //     gameId: gameId,
-        //     amountToken: amount,
-        //   }),
-        // },
+        {
+          contractAddress:
+            faceit_address,
+          entrypoint: "raiseFund",
+          calldata: CallData.compile({
+            gameId: gameIdUint256,
+            amountToken: amountUint256,
+          }),
+        },
       ]);
       await provider_strk.waitForTransaction(multiCall.transaction_hash);
 }
 
-raiseFund(10, 1);
+
 
 async function transfer(amount: Number): Promise<any> {
     const erc20 = await getERC20Contract();
@@ -147,7 +146,10 @@ async function transfer(amount: Number): Promise<any> {
     }
 }
 
-//transfer(10);
+async function updateRate(): Promise<any> {
+    const vault = await getVaultContract();
+    
+}
 
 async function getERC20Contract(): Promise<Contract> {
     const testAbi = await provider_strk.getClassAt(erc20_address);
