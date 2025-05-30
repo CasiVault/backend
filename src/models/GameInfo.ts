@@ -9,6 +9,7 @@ export interface IGameInfo {
     totalFund: string;
     gameName: string;
     description: string;
+    winner: string;
 }
 
 const GameInfoSchema = new mongoose.Schema<IGameInfo>({
@@ -19,6 +20,8 @@ const GameInfoSchema = new mongoose.Schema<IGameInfo>({
     totalFund: { type: String, required: true, default: "0" },
     gameName: { type: String, required: true },
     description: { type: String, required: true },
+    Description: { type: String, required: true },
+    winner: {type: String, default: null },
 },{
     versionKey: false
   });
