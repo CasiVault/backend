@@ -58,9 +58,9 @@ async function getFaceitContract(): Promise<Contract> {
     return faceit;
 }
 
-async function register(): Promise<any> {
+async function register(id: Number): Promise<any> {
     const faceit = await getFaceitContract();
-    const myCall1 = faceit.populate("register");
+    const myCall1 = faceit.populate("register", [id]);
     const { transaction_hash: txH } = await account.execute(myCall1, {
         version: constants.TRANSACTION_VERSION.V3,
         maxFee: 1e15,
@@ -85,6 +85,8 @@ async function register(): Promise<any> {
     }
 
 }
+
+register(10);
 
 
 async function raiseFund(amount: number, gameId: number): Promise<any> {
