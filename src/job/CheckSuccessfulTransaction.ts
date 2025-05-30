@@ -1,6 +1,6 @@
 import { provider_strk } from "../contracts";
 import {num, hash} from "starknet";
-import { L2_address } from "../common/config";
+
 
 export class CheckSuccessfulTransactions{
 

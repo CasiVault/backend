@@ -219,9 +219,9 @@
                     "isFinished": { "type": "boolean" },
                     "totalFund": { "type": "string" },
                     "gameName": { "type": "string" },
-                    "Description": { "type": "string" }
+                    "description": { "type": "string" }
                 },
-                "required": ["idGame", "host", "isFinished", "totalFund", "gameName", "Description"]
+                "required": ["idGame", "host", "isFinished", "totalFund", "gameName", "description"]
             },
             "GameInfoUpdate": {
                 "type": "object",
@@ -231,7 +231,7 @@
                     "isFinished": { "type": "boolean" },
                     "totalFund": { "type": "string" },
                     "gameName": { "type": "string" },
-                    "Description": { "type": "string" }
+                    "description": { "type": "string" }
                 },
                 "required": ["idGame"]
             }

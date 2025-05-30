@@ -19,7 +19,7 @@ export class GameController {
     public async registerGame(req: Request, res: Response) {
         try {
             const gameData = req.body;
-            if (!gameData.idGame || !gameData.host || !gameData.totalFund || !gameData.gameName || !gameData.Description) {
+            if (!gameData.idGame || !gameData.host || !gameData.gameName || !gameData.description) {
                 return sendRes(res, new BadRequest("Missing required fields"), null);
             }
             const result = await this.gameService.registerGame(gameData);
@@ -49,7 +49,7 @@ export class GameController {
             if (!updateData.idGame) {
                 return sendRes(res, new BadRequest("idGame is required"), null);
             }
-            
+
             const result = await this.gameService.updateGame(updateData);
             sendRes(res, null, result);
         } catch (error) {
