@@ -18,7 +18,7 @@ class Server {
     public app: Application;
     private userRequestsRouter: UserRequestsRoute;
     private gameRouter: GameRoute;
-    private gameService: any;
+    private gameService: GameService;
 
     constructor() {
         this.app = express();
@@ -117,18 +117,15 @@ class Server {
                 winner: gameData.winner
             });
 
-            // Example database insertion (replace with your actual DB logic)
-            /*
-            await this.gameService.createGame({
-                game_id: gameData.game_id,
-                status: gameData.status,
-                player1_address: gameData.p1,
-                player2_address: gameData.p2 === "0x0" ? null : gameData.p2,
-                winner_address: gameData.winner === "0x0" ? null : gameData.winner,
-                created_at: new Date(),
-                updated_at: new Date()
+        
+            await this.gameService.registerGame({
+                idGame: gameData.game_id,
+                host: gameData.p1,
+                isFinished: false,
+                Description: "Chess game with player",
+                totalFund: 100,
             });
-            */
+            
 
             console.log(`[GameLogic] Successfully created game ${gameData.game_id} in database`);
         } catch (error) {
@@ -145,8 +142,15 @@ class Server {
         console.log(`[GameLogic] Processing player join for game ${gameData.game_id}`);
     }
 
-    private handleGameFinished(gameData: GameStatusNode): void {
+    private async handleGameFinished(gameData: GameStatusNode): Promise<void> {
         console.log(`[GameLogic] Processing game finish for game ${gameData.game_id}`);
+        const game =  await this.gameService.getGameInfo(gameData.game_id.toString())
+        await this.gameService.updateGame({
+            idGame: gameData.game_id,
+            winner: gameData.winner,
+            isFinished: true,
+            ...game
+        })
 
         console.log(`[GameLogic] Game id: ${gameData.game_id} Winner: ${gameData.winner}`);
     }
