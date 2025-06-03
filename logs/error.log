@@ -4,3 +4,4 @@
 2025-05-30 19:20:32:2032 [CronJob] [[31merror[39m]: [31mError crawling withdraw requests terminated[39m
 2025-05-30 19:21:12:2112 [CronJob] [[31merror[39m]: [31mError crawling withdraw requests fetch failed[39m
 2025-05-30 19:45:10:4510 [CronJob] [[31merror[39m]: [31mError crawling withdraw requests fetch failed[39m
+2025-06-03 16:02:13:213 [GameService] [[31merror[39m]: [31mError funding game: ValidationError: totalFund: Path `totalFund` is required.[39m

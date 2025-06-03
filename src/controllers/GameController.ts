@@ -14,6 +14,7 @@ export class GameController {
         this.updateGame = this.updateGame.bind(this);
         this.deleteGame = this.deleteGame.bind(this);
         this.getAllGames = this.getAllGames.bind(this);
+        this.fundGame = this.fundGame.bind(this);
     }
 
     public async registerGame(req: Request, res: Response) {
@@ -78,6 +79,20 @@ export class GameController {
             sendRes(res, null, result);
         } catch (error) {
             sendRes(res, new ServerError("Failed to get all games"), null);
+        }
+    }
+
+    public async fundGame(req: Request, res: Response) {
+        try {
+            const { idGame, amount } = req.body;
+            if (!idGame || !amount) {
+                return sendRes(res, new BadRequest("idGame and amount are required"), null);
+            }
+
+            const result = await this.gameService.fundGame(idGame, amount);
+            sendRes(res, null, result);
+        } catch (error) {
+            sendRes(res, new ServerError("Failed to fund game"), null);
         }
     }
 }

@@ -1,6 +1,10 @@
 import GameInfo, { IGameInfo } from "../models/GameInfo";
 import getLogger from "../utils/LoggerUtils";
 import { removeUndefinedFields } from "../utils/DataUtils";
+import { BadRequest } from "../common/errors/BadRequest";
+import { getTotalFund } from "../contracts";
+import { ServerError } from "../common/errors/ServerError";
+
 const logger = getLogger("GameService");
 
 export class GameService {
@@ -72,11 +76,42 @@ export class GameService {
 
     public async getAllGames(skip = 0, limit = 10) {
         try {
-            const [data, total] = await Promise.all([GameInfo.find().skip(skip).limit(limit), GameInfo.countDocuments()]);
+            const [data, total] = await Promise.all([
+                GameInfo.find({ host: { $exists: true } })
+                    .skip(skip)
+                    .limit(limit),
+                GameInfo.countDocuments({ host: { $exists: true } }),
+            ]);
+
             logger.info(`Fetched games with pagination: skip=${skip}, limit=${limit}`);
             return { data, total };
         } catch (error) {
             logger.error(`Error getting all games: ${error}`);
+            throw error;
+        }
+    }
+
+    public async fundGame(idGame: string, amount: string) {
+        try {
+            logger.info(`Funding game with id: ${idGame} and amount: ${amount}`);
+
+            const game = await GameInfo.findOne({ idGame: idGame });
+            if (!game) {
+                throw new BadRequest("Game not found");
+            }
+
+            let newFund = await getTotalFund(Number(idGame));
+            if (newFund == null || isNaN(Number(newFund))) {
+                throw new ServerError("Failed to fetch total fund");
+            }
+            
+            game.totalFund = newFund.toString();
+            logger.info(`Game total fund after funding: ${game.totalFund}`);
+
+            await game.save();
+            return game;
+        } catch (error) {
+            logger.error(`Error funding game: ${error}`);
             throw error;
         }
     }

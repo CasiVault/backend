@@ -58,10 +58,11 @@ async function getFaceitContract(): Promise<Contract> {
     return faceit;
 }
 
-async function getTotalFund(id: Number): Promise<any> {
+export async function getTotalFund(id: Number): Promise<any> {
     const faceit = await getFaceitContract();
     let fund = await faceit.getTotalFundEachCompetition(id);
     console.log("Fund: ", fund);
+    return fund;
 }
 
 getTotalFund(785696);

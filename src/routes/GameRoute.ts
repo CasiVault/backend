@@ -16,5 +16,6 @@ export class GameRoute {
         this.router.put("/update", this.gameController.updateGame);
         this.router.delete("/delete", this.gameController.deleteGame);
         this.router.get("/all", this.gameController.getAllGames);
+        this.router.post("/fund", this.gameController.fundGame);
     }
 }
