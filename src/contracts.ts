@@ -58,6 +58,14 @@ async function getFaceitContract(): Promise<Contract> {
     return faceit;
 }
 
+async function getTotalFund(id: Number): Promise<any> {
+    const faceit = await getFaceitContract();
+    let fund = await faceit.getTotalFundEachCompetition(id);
+    console.log("Fund: ", fund);
+}
+
+getTotalFund(785696);
+
 async function register(id: Number): Promise<any> {
     const faceit = await getFaceitContract();
     const myCall1 = faceit.populate("register", [id]);
@@ -86,7 +94,7 @@ async function register(id: Number): Promise<any> {
 
 }
 
-register(10);
+//register(10);
 
 
 async function raiseFund(amount: number, gameId: number): Promise<any> {
@@ -117,6 +125,8 @@ async function raiseFund(amount: number, gameId: number): Promise<any> {
       ]);
       await provider_strk.waitForTransaction(multiCall.transaction_hash);
 }
+
+
 
 
 
